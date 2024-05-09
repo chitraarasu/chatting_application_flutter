@@ -121,7 +121,7 @@ class _UserProfileInputScreenState extends State<UserProfileInputScreen> {
                   ),
                 );
               } else {
-                var docs = snapshot.data.data();
+                var docs = snapshot.data?.data();
                 if (docs != null) {
                   nameController.text = docs["username"];
                 }

@@ -347,11 +347,11 @@ class _ChatListState extends State<ChatList> {
                                                 .toDate(),
                                           );
                                           var user = dataWithFilter.value[index]
-                                              ["userData"];
+                                              ?["userData"];
                                           return ChatBar(
                                             dataWithFilter.value[index]
                                                 ["chat_id"],
-                                            user["username"],
+                                            user?["username"] ?? "",
                                             dataWithFilter.value[index]
                                                         ["recentMessage"]
                                                     .toString()

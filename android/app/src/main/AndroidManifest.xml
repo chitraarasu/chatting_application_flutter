@@ -9,6 +9,7 @@
     <!-- For apps with targetSDK=31 (Android 12) -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         tools:replace="android:label"
