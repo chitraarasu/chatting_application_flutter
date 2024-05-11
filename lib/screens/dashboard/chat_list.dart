@@ -94,40 +94,44 @@ class _ChatListState extends State<ChatList> {
             SizedBox(
               width: 5,
             ),
-            GestureDetector(
-              onTap: () {
-                PaymentController.to.openPayWall();
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(
-                    width: 1,
-                    color: Color(0xFFBDA36B),
+            Obx(
+              () => GestureDetector(
+                onTap: () {
+                  PaymentController.to.openPayWall();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(
+                      width: 1,
+                      color: Color(0xFFBDA36B),
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 6),
-                  child: Row(
-                    children: [
-                      Image(
-                        image: AssetImage("assets/images/crown.png"),
-                        width: 15,
-                        color: Color(0xFFBDA36B),
-                      ),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text(
-                        "Go Premium",
-                        style: TextStyle(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 6),
+                    child: Row(
+                      children: [
+                        Image(
+                          image: AssetImage("assets/images/crown.png"),
+                          width: 15,
                           color: Color(0xFFBDA36B),
-                          fontWeight: FontWeight.w500,
-                          wordSpacing: 0,
-                          fontSize: 12,
                         ),
-                      ),
-                    ],
+                        if (!PaymentController.to.isPlanActive.value)
+                          SizedBox(
+                            width: 3,
+                          ),
+                        if (!PaymentController.to.isPlanActive.value)
+                          Text(
+                            "Go Premium",
+                            style: TextStyle(
+                              color: Color(0xFFBDA36B),
+                              fontWeight: FontWeight.w500,
+                              wordSpacing: 0,
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),

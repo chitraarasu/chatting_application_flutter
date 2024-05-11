@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../ads/ad_state.dart';
+import '../../controller/payment_controller.dart';
 
 class MyGroups extends StatefulWidget {
   @override
@@ -21,23 +22,27 @@ class _MyGroupsState extends State<MyGroups> {
   @override
   void initState() {
     super.initState();
-    InterstitialAd.load(
-      adUnitId: AdState.to.interstitialAd,
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          _interstitialAd = ad;
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error');
-        },
-      ),
-    );
+    if (!PaymentController.to.isPlanActive.value) {
+      InterstitialAd.load(
+        adUnitId: AdState.to.interstitialAd,
+        request: AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            _interstitialAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error');
+          },
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
-    _interstitialAd?.show();
+    if (!PaymentController.to.isPlanActive.value) {
+      _interstitialAd?.show();
+    }
     super.dispose();
   }
 

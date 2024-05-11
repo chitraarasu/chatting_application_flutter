@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../ads/ad_state.dart';
 import '../../controller/controller.dart';
+import '../../controller/payment_controller.dart';
 
 class EditChannel extends StatefulWidget {
   final channelName;
@@ -29,25 +30,29 @@ class _EditChannelState extends State<EditChannel> {
   void initState() {
     super.initState();
     channelNameController.text = widget.channelName;
-    InterstitialAd.load(
-      adUnitId: AdState.to.interstitialAd,
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          _interstitialAd = ad;
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error');
-        },
-      ),
-    );
+    if (!PaymentController.to.isPlanActive.value) {
+      InterstitialAd.load(
+        adUnitId: AdState.to.interstitialAd,
+        request: AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            _interstitialAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error');
+          },
+        ),
+      );
+    }
   }
 
   InterstitialAd? _interstitialAd;
 
   @override
   void dispose() {
-    _interstitialAd?.show();
+    if (!PaymentController.to.isPlanActive.value) {
+      _interstitialAd?.show();
+    }
     super.dispose();
   }
 

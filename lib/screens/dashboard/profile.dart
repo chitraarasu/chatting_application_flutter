@@ -54,6 +54,7 @@ class Profile extends StatelessWidget {
                       transition: Transition.fade);
                   await FirebaseMessaging.instance.deleteToken();
                   await Purchases.logOut();
+                  PaymentController.to.isPlanActive.value = false;
                 },
               )
             ],
@@ -226,13 +227,17 @@ class Profile extends StatelessWidget {
                       SizedBox(
                         height: 10,
                       ),
-                      CustomTile(
-                        "Subscribe Now",
-                        "assets/images/crown.png",
-                        Color(0xFFBDA36B),
-                        () {
-                          PaymentController.to.openPayWall();
-                        },
+                      Obx(
+                        () => PaymentController.to.isPlanActive.value
+                            ? Container()
+                            : CustomTile(
+                                "Subscribe Now",
+                                "assets/images/crown.png",
+                                Color(0xFFBDA36B),
+                                () {
+                                  PaymentController.to.openPayWall();
+                                },
+                              ),
                       ),
                       CustomTile("Groups", Icons.group_rounded, Colors.green,
                           () {
@@ -303,13 +308,17 @@ class Profile extends StatelessWidget {
                       SizedBox(
                         height: 20,
                       ),
-                      Text(
-                        "Ads",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey,
-                        ),
+                      Obx(
+                        () => PaymentController.to.isPlanActive.value
+                            ? Container()
+                            : Text(
+                                "Ads",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey,
+                                ),
+                              ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),

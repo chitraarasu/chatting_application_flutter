@@ -218,186 +218,198 @@ class _HomeState extends State<Home> {
                   duration: Duration(milliseconds: 250),
                   child: Padding(
                     padding: EdgeInsets.only(bottom: _fabDimension / 2 + 10),
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 250),
-                      height: isFavTabVisible.value ? 210 : 0,
-                      width: isFavTabVisible.value ? width * .55 : 0,
-                      child: AnimatedOpacity(
+                    child: Obx(
+                      () => AnimatedContainer(
                         duration: Duration(milliseconds: 250),
-                        opacity: isFavTabVisible.value ? 1 : 0,
-                        child: Column(
-                          children: [
-                            Flexible(
-                              child: GestureDetector(
-                                onTap: () {
-                                  PaymentController.to.openPayWall();
-                                },
-                                child: Container(
-                                  width:
-                                      (width * 0.7142857142857143).toDouble(),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: Colors.white,
-                                    border: Border.all(
-                                      width: 2,
-                                      color: Color(0xFFBDA36B),
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 3,
-                                        blurRadius: 3,
-                                        offset: Offset(0, 0),
+                        height: isFavTabVisible.value
+                            ? PaymentController.to.isPlanActive.value
+                                ? 110
+                                : 210
+                            : 0,
+                        width: isFavTabVisible.value ? width * .55 : 0,
+                        child: AnimatedOpacity(
+                          duration: Duration(milliseconds: 250),
+                          opacity: isFavTabVisible.value ? 1 : 0,
+                          child: Column(
+                            children: [
+                              if (!PaymentController.to.isPlanActive.value)
+                                Flexible(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      isFavTabVisible.value = false;
+                                      PaymentController.to.openPayWall();
+                                    },
+                                    child: Container(
+                                      width: (width * 0.7142857142857143)
+                                          .toDouble(),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          width: 2,
+                                          color: Color(0xFFBDA36B),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.2),
+                                            spreadRadius: 3,
+                                            blurRadius: 3,
+                                            offset: Offset(0, 0),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Center(
-                                    child: SingleChildScrollView(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(10),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Image(
-                                              image: AssetImage(
-                                                  "assets/images/crown.png"),
-                                              width: 25,
-                                              color: Color(0xFFBDA36B),
+                                      child: Center(
+                                        child: SingleChildScrollView(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(10),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Image(
+                                                  image: AssetImage(
+                                                      "assets/images/crown.png"),
+                                                  width: 25,
+                                                  color: Color(0xFFBDA36B),
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text(
+                                                  "Upgrade to Premium for an Ad-Free Experience!",
+                                                  style: TextStyle(
+                                                    color: Color(0xFFBDA36B),
+                                                    fontWeight: FontWeight.w600,
+                                                    wordSpacing: 0,
+                                                    fontSize: 15,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
                                             ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              "Upgrade to Premium for an Ad-Free Experience!",
-                                              style: TextStyle(
-                                                color: Color(0xFFBDA36B),
-                                                fontWeight: FontWeight.w600,
-                                                wordSpacing: 0,
-                                                fontSize: 15,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Flexible(
-                              child: CustomPaint(
-                                size: Size(width,
-                                    (width * 0.7142857142857143).toDouble()),
-                                painter: RPSCustomPainter(),
-                                child: Row(
-                                    children: [
-                                  {
-                                    "id": 0,
-                                    "title": "Contact",
-                                    "icon": "contacts.png"
-                                  },
-                                  {
-                                    "id": 1,
-                                    "title": "Group",
-                                    "icon": "people.png",
-                                  }
-                                ]
-                                        .map((item) => Expanded(
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child:
-                                                        SingleChildScrollView(
-                                                      child: OpenContainer(
-                                                        transitionType:
-                                                            ContainerTransitionType
-                                                                .fade,
-                                                        openBuilder:
-                                                            (BuildContext
-                                                                    context,
-                                                                VoidCallback
-                                                                    _) {
-                                                          if (item["id"] == 0) {
-                                                            return Contacts(
-                                                                "chat");
-                                                          } else {
-                                                            return const CreateNewChannelOrJoinChannel();
-                                                          }
-                                                        },
-                                                        openElevation: 0,
-                                                        closedElevation: 0,
-                                                        closedColor:
-                                                            Colors.transparent,
-                                                        onClosed: (data) {
-                                                          isFavTabVisible
-                                                              .value = false;
-                                                        },
-                                                        closedBuilder: (BuildContext
-                                                                context,
-                                                            VoidCallback
-                                                                openContainer) {
-                                                          return Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Image(
-                                                                image: AssetImage(
-                                                                    "assets/images/${item["icon"]}"),
-                                                                width: 45,
-                                                              ),
-                                                              SizedBox(
-                                                                  height: 4),
-                                                              Text(
-                                                                item["title"]
-                                                                    .toString(),
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
+                              if (!PaymentController.to.isPlanActive.value)
+                                SizedBox(
+                                  height: 8,
+                                ),
+                              Flexible(
+                                child: CustomPaint(
+                                  size: Size(width,
+                                      (width * 0.7142857142857143).toDouble()),
+                                  painter: RPSCustomPainter(),
+                                  child: Row(
+                                      children: [
+                                    {
+                                      "id": 0,
+                                      "title": "Contact",
+                                      "icon": "contacts.png"
+                                    },
+                                    {
+                                      "id": 1,
+                                      "title": "Group",
+                                      "icon": "people.png",
+                                    }
+                                  ]
+                                          .map((item) => Expanded(
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        child: OpenContainer(
+                                                          transitionType:
+                                                              ContainerTransitionType
+                                                                  .fade,
+                                                          openBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  VoidCallback
+                                                                      _) {
+                                                            if (item["id"] ==
+                                                                0) {
+                                                              return Contacts(
+                                                                  "chat");
+                                                            } else {
+                                                              return const CreateNewChannelOrJoinChannel();
+                                                            }
+                                                          },
+                                                          openElevation: 0,
+                                                          closedElevation: 0,
+                                                          closedColor: Colors
+                                                              .transparent,
+                                                          onClosed: (data) {
+                                                            isFavTabVisible
+                                                                .value = false;
+                                                          },
+                                                          closedBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  VoidCallback
+                                                                      openContainer) {
+                                                            return Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Image(
+                                                                  image: AssetImage(
+                                                                      "assets/images/${item["icon"]}"),
+                                                                  width: 45,
                                                                 ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: 10,
-                                                              )
-                                                            ],
-                                                          );
-                                                        },
+                                                                SizedBox(
+                                                                    height: 4),
+                                                                Text(
+                                                                  item["title"]
+                                                                      .toString(),
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 10,
+                                                                )
+                                                              ],
+                                                            );
+                                                          },
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  if (item["id"] == 0)
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 15),
-                                                      child: DottedLine(
-                                                        direction:
-                                                            Axis.vertical,
-                                                        lineLength:
-                                                            double.infinity,
-                                                        lineThickness: 2.0,
-                                                        dashLength: 10.0,
-                                                        dashColor:
-                                                            Color(0xFF86898f),
-                                                        dashGapLength: 6.0,
-                                                      ),
-                                                    )
-                                                ],
-                                              ),
-                                            ))
-                                        .toList()),
+                                                    if (item["id"] == 0)
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 15),
+                                                        child: DottedLine(
+                                                          direction:
+                                                              Axis.vertical,
+                                                          lineLength:
+                                                              double.infinity,
+                                                          lineThickness: 2.0,
+                                                          dashLength: 10.0,
+                                                          dashColor:
+                                                              Color(0xFF86898f),
+                                                          dashGapLength: 6.0,
+                                                        ),
+                                                      )
+                                                  ],
+                                                ),
+                                              ))
+                                          .toList()),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

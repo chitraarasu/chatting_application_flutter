@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../ads/ad_state.dart';
 import '../controller/controller.dart';
+import '../controller/payment_controller.dart';
 import 'chats/chat_screen.dart';
 
 class Contacts extends StatefulWidget {
@@ -35,25 +36,29 @@ class _ContactsState extends State<Contacts> {
     super.initState();
     getContactFunction = homeController.getContacts();
     isFromGroup = widget.from == "group";
-    InterstitialAd.load(
-      adUnitId: AdState.to.interstitialAd,
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          _interstitialAd = ad;
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error');
-        },
-      ),
-    );
+    if (!PaymentController.to.isPlanActive.value) {
+      InterstitialAd.load(
+        adUnitId: AdState.to.interstitialAd,
+        request: AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            _interstitialAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error');
+          },
+        ),
+      );
+    }
   }
 
   InterstitialAd? _interstitialAd;
 
   @override
   void dispose() {
-    _interstitialAd?.show();
+    if (!PaymentController.to.isPlanActive.value) {
+      _interstitialAd?.show();
+    }
     super.dispose();
   }
 

@@ -7,21 +7,33 @@ import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 class PaymentController extends GetxController {
   static PaymentController to = Get.find();
   final String _entitlementName = "pro";
+  RxBool isPlanActive = RxBool(false);
 
   @override
   void onInit() {
     super.onInit();
     Purchases.addCustomerInfoUpdateListener((purchaserInfo) {
       print(purchaserInfo);
+      EntitlementInfo? entitlement =
+          purchaserInfo.entitlements.all[_entitlementName];
+      if (entitlement != null && entitlement.isActive) {
+        isPlanActive.value = true;
+      } else {
+        isPlanActive.value = false;
+      }
     });
   }
 
   Future openPayWall() async {
+    if (isPlanActive.value) {
+      return;
+    }
     try {
       CustomerInfo customerInfo = await Purchases.getCustomerInfo();
       EntitlementInfo? entitlement =
           customerInfo.entitlements.all[_entitlementName];
       if (entitlement != null && entitlement.isActive) {
+        isPlanActive.value = true;
       } else {
         final paywallResult = await RevenueCatUI.presentPaywallIfNeeded(
           _entitlementName,

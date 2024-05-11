@@ -9,6 +9,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:location/location.dart';
 
 import '../../ads/ad_state.dart';
+import '../../controller/payment_controller.dart';
 
 class Map extends StatefulWidget {
   final channelId;
@@ -25,25 +26,29 @@ class _MapState extends State<Map> {
   @override
   void initState() {
     super.initState();
-    InterstitialAd.load(
-      adUnitId: AdState.to.interstitialAd,
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          _interstitialAd = ad;
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error');
-        },
-      ),
-    );
+    if (!PaymentController.to.isPlanActive.value) {
+      InterstitialAd.load(
+        adUnitId: AdState.to.interstitialAd,
+        request: AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            _interstitialAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error');
+          },
+        ),
+      );
+    }
   }
 
   InterstitialAd? _interstitialAd;
 
   @override
   void dispose() {
-    _interstitialAd?.show();
+    if (!PaymentController.to.isPlanActive.value) {
+      _interstitialAd?.show();
+    }
     super.dispose();
   }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chatting_application/controller/payment_controller.dart';
 import 'package:chatting_application/credentials.dart';
 import 'package:chatting_application/screens/dashboard/chat_list.dart';
 import 'package:chatting_application/screens/dashboard/music.dart';
@@ -206,21 +207,25 @@ class HomeController extends GetxController {
   }
 
   Widget getAdsWidget() {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Color(0xFFebebec),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: AdWidget(
-        ad: BannerAd(
-          adUnitId: AdState.to.bannerAdUnitId,
-          size: AdSize.banner,
-          request: AdRequest(),
-          listener: BannerAdListener(),
-        )..load(),
-      ),
+    return Obx(
+      () => PaymentController.to.isPlanActive.value
+          ? Container()
+          : Container(
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Color(0xFFebebec),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: AdWidget(
+                ad: BannerAd(
+                  adUnitId: AdState.to.bannerAdUnitId,
+                  size: AdSize.banner,
+                  request: AdRequest(),
+                  listener: BannerAdListener(),
+                )..load(),
+              ),
+            ),
     );
   }
 }
