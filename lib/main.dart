@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,9 +12,11 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'controller/binder.dart';
+import 'credentials.dart';
 import 'firebase_options.dart';
 import 'screens/dashboard/home.dart';
 import 'screens/onboarding/onboarding_page.dart';
@@ -116,7 +120,27 @@ void main() async {
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,
   ]);
+  await initPlatformState();
   runApp(MyApp());
+}
+
+Future<void> initPlatformState() async {
+  await Purchases.setLogLevel(LogLevel.debug);
+
+  PurchasesConfiguration? configuration;
+  if (Platform.isAndroid) {
+    configuration = PurchasesConfiguration(revenueCat);
+    // if (buildingForAmazon) {
+    //   // use your preferred way to determine if this build is for Amazon store
+    //   // checkout our MagicWeather sample for a suggestion
+    //   configuration = AmazonConfiguration(<public_amazon_api_key>);
+    // }
+  } else if (Platform.isIOS) {
+    // configuration = PurchasesConfiguration(<public_apple_api_key>);
+  }
+  if (configuration != null) {
+    await Purchases.configure(configuration);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -142,7 +166,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Jabber",
       initialBinding: Binder(),
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: false,
+      ),
+      themeMode: ThemeMode.light,
+      // theme: AppTheme.lightTheme,
+      // darkTheme: AppTheme.lightTheme,
       home: _auth.currentUser == null ? const OnBoardingPage() : const Home(),
     );
   }

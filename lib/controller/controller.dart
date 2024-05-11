@@ -111,6 +111,7 @@ class HomeController extends GetxController {
   }
 
   List _contactPhoneNumbers = [];
+  List userData = [];
 
   Future getContacts() async {
     if (_contactPhoneNumbers.isNotEmpty) {

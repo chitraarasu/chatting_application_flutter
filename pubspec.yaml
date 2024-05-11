@@ -83,6 +83,7 @@ dependencies:
   firebase_analytics: ^10.8.0
   gdpr_dialog: ^2.1.1
   purchases_flutter: ^6.29.0
+  purchases_ui_flutter: ^6.29.0
 
 
 dev_dependencies:
@@ -122,6 +123,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    - assets/
     - assets/animations/
     - assets/images/
     - assets/credentials.json

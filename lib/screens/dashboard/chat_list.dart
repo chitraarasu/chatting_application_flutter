@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
+import '../../controller/payment_controller.dart';
 import '../../widget/chat_bar.dart';
 import '../../widget/empty_screen.dart';
 import '../chats/channel_request.dart';
@@ -73,13 +74,65 @@ class _ChatListState extends State<ChatList> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          "Messages",
-          style: TextStyle(
-            color: Colors.black,
-            letterSpacing: 1,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Row(
+          children: [
+            // ClipRRect(
+            //   borderRadius: BorderRadius.circular(10),
+            //   child: Image(
+            //     image: AssetImage("assets/app-icon.png"),
+            //     width: 35,
+            //   ),
+            // ),
+            Text(
+              "Messages",
+              style: TextStyle(
+                color: Colors.black,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            GestureDetector(
+              onTap: () {
+                PaymentController.to.openPayWall();
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(
+                    width: 1,
+                    color: Color(0xFFBDA36B),
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 6),
+                  child: Row(
+                    children: [
+                      Image(
+                        image: AssetImage("assets/images/crown.png"),
+                        width: 15,
+                        color: Color(0xFFBDA36B),
+                      ),
+                      SizedBox(
+                        width: 3,
+                      ),
+                      Text(
+                        "Go Premium",
+                        style: TextStyle(
+                          color: Color(0xFFBDA36B),
+                          fontWeight: FontWeight.w500,
+                          wordSpacing: 0,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
         actions: [
           IconButton(

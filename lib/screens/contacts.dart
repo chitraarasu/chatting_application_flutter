@@ -23,7 +23,6 @@ class Contacts extends StatefulWidget {
 }
 
 class _ContactsState extends State<Contacts> {
-  List userData = [];
   HomeController homeController = Get.find();
 
   Future? getContactFunction;
@@ -86,8 +85,8 @@ class _ContactsState extends State<Contacts> {
             onPressed: () {
               showSearch(
                   context: context,
-                  delegate: MySearchDelegate(
-                      userData, isFromGroup, widget.channelData));
+                  delegate: MySearchDelegate(homeController.userData,
+                      isFromGroup, widget.channelData));
             },
             icon: const Icon(
               Icons.search,
@@ -124,38 +123,47 @@ class _ContactsState extends State<Contacts> {
                       ),
                     );
                   }
-                  return StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection("users")
-                        .snapshots(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<dynamic> userSnp) {
-                      if (userSnp.data != null) {
-                        userData = [];
-                        List docs = userSnp.data.docs;
-                        for (var contactItem in contact) {
-                          for (var userItem in docs) {
-                            if (contactItem.contains(
-                                userItem.data()["phoneNumber"].toString())) {
-                              userData.add(userItem.data());
-                            }
-                          }
-                        }
-                      }
-
-                      if (userSnp.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: Text("Loading..."),
-                        );
-                      } else {
-                        return ChatListCardCaller(
-                          contactProfiles: userData,
+                  return homeController.userData.isNotEmpty
+                      ? ChatListCardCaller(
+                          contactProfiles: homeController.userData,
                           isFromGroup: isFromGroup,
                           channelData: widget.channelData,
+                        )
+                      : StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection("users")
+                              .snapshots(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> userSnp) {
+                            if (userSnp.data != null) {
+                              homeController.userData = [];
+                              List docs = userSnp.data.docs;
+                              for (var contactItem in contact) {
+                                for (var userItem in docs) {
+                                  if (contactItem.contains(userItem
+                                      .data()["phoneNumber"]
+                                      .toString())) {
+                                    homeController.userData
+                                        .add(userItem.data());
+                                  }
+                                }
+                              }
+                            }
+
+                            if (userSnp.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: Text("Loading..."),
+                              );
+                            } else {
+                              return ChatListCardCaller(
+                                contactProfiles: homeController.userData,
+                                isFromGroup: isFromGroup,
+                                channelData: widget.channelData,
+                              );
+                            }
+                          },
                         );
-                      }
-                    },
-                  );
                 } else {
                   return Center(
                     child: Column(

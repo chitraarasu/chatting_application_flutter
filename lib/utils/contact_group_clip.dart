@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RPSCustomPainter extends CustomPainter {
@@ -70,7 +69,8 @@ class RPSCustomPainter extends CustomPainter {
     path0.cubicTo(size.width * -0.0017429, size.height * 0.5819600, 0,
         size.height * 0.6250000, 0, size.height * 0.1500000);
     path0.close();
-
+  
+    canvas.drawShadow(path0, Colors.grey.withOpacity(0.2), 3, false);
     canvas.drawPath(path0, paint0);
     // canvas.drawShadow(path0, Colors.grey.withAlpha(50), 4.0, false);
     canvas.drawPath(path0, borderPaint);

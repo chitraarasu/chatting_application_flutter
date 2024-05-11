@@ -1,14 +1,13 @@
 import 'package:chatting_application/screens/onboarding/privacy_policy.dart';
 import 'package:chatting_application/screens/onboarding/user_profile_input_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:otp_autofill/otp_autofill.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:rive/rive.dart';
 
 import '../../controller/controller.dart';
@@ -37,6 +36,7 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var verificationId;
+
   @override
   void dispose() {
     // phoneNumberController.dispose();
@@ -130,6 +130,9 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
           await _auth.signInWithCredential(phoneAuthCredential);
 
       if (authCredentials.user != null) {
+        LogInResult result =
+            await Purchases.logIn(authCredentials.user?.uid ?? "");
+        // print(result.customerInfo);
         Get.to(
             () => UserProfileInputScreen(phoneNumberController.text,
                 Get.find<HomeController>().selectedDialogCountry.phoneCode),
@@ -455,8 +458,10 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
                                                       color: Colors.white,
                                                     ),
                                                   ),
-                                                  Icon(Icons.send_rounded,
-                                                    color: Colors.white,),
+                                                  Icon(
+                                                    Icons.send_rounded,
+                                                    color: Colors.white,
+                                                  ),
                                                 ],
                                               ),
                                       ),
@@ -610,9 +615,12 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
                                                   color: Colors.white,
                                                 ),
                                               )
-                                            : const Text("Verify", style: TextStyle(
-                                          color: Colors.white,
-                                        ),),
+                                            : const Text(
+                                                "Verify",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
                                       ),
                                     ),
                                   ),

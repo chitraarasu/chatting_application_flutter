@@ -8,10 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../../controller/controller.dart';
+import '../../controller/payment_controller.dart';
 import '../../widget/open_image.dart';
 import '../chats/my_groups.dart';
 import '../onboarding/onboarding_page.dart';
@@ -44,13 +46,14 @@ class Profile extends StatelessWidget {
                   'Yes',
                   style: TextStyle(color: Colors.red),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   Navigator.of(context).pop();
                   Get.find<HomeController>().setScreen(0);
                   _auth.signOut();
                   Get.offAll(const OnBoardingPage(),
                       transition: Transition.fade);
-                  FirebaseMessaging.instance.deleteToken();
+                  await FirebaseMessaging.instance.deleteToken();
+                  await Purchases.logOut();
                 },
               )
             ],
@@ -223,6 +226,14 @@ class Profile extends StatelessWidget {
                       SizedBox(
                         height: 10,
                       ),
+                      CustomTile(
+                        "Subscribe Now",
+                        "assets/images/crown.png",
+                        Color(0xFFBDA36B),
+                        () {
+                          PaymentController.to.openPayWall();
+                        },
+                      ),
                       CustomTile("Groups", Icons.group_rounded, Colors.green,
                           () {
                         Get.to(() => MyGroups(), transition: Transition.fadeIn);
@@ -236,7 +247,7 @@ class Profile extends StatelessWidget {
                       }),
 
                       CustomTile(
-                        "Clear schedules",
+                        "Clear Schedules",
                         Icons.punch_clock,
                         Colors.blueGrey,
                         () {
@@ -338,42 +349,51 @@ class CustomTile extends StatelessWidget {
       onTap: () {
         onTap();
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: color,
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 30,
+      child: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: color,
+                    child: icon.runtimeType == String
+                        ? ImageIcon(
+                            AssetImage(icon),
+                            color: Colors.white,
+                            size: 30,
+                          )
+                        : Icon(
+                            icon,
+                            color: Colors.white,
+                            size: 30,
+                          ),
                   ),
-                ),
-                SizedBox(
-                  width: 15,
-                ),
-                Text(
-                  topic,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(
+                    width: 15,
                   ),
-                ),
-              ],
-            ),
-            if (topic != "Clear schedules")
-              if (topic != "Donate")
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 25,
-                  color: Colors.black,
-                )
-          ],
+                  Text(
+                    topic,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              if (topic != "Clear Schedules")
+                if (topic != "Donate")
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 25,
+                    color: Colors.black,
+                  )
+            ],
+          ),
         ),
       ),
     );
