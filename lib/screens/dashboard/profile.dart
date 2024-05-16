@@ -28,12 +28,12 @@ class Profile extends StatelessWidget {
   ];
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  _displayDialog(BuildContext context) async {
+  _displayDialog(BuildContext context, String title, Function onDone) async {
     return showModal(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Do you want to logout?'),
+            title: Text(title),
             actions: <Widget>[
               TextButton(
                 child: const Text('No'),
@@ -47,14 +47,7 @@ class Profile extends StatelessWidget {
                   style: TextStyle(color: Colors.red),
                 ),
                 onPressed: () async {
-                  Navigator.of(context).pop();
-                  Get.find<HomeController>().setScreen(0);
-                  _auth.signOut();
-                  Get.offAll(const OnBoardingPage(),
-                      transition: Transition.fade);
-                  await FirebaseMessaging.instance.deleteToken();
-                  await Purchases.logOut();
-                  PaymentController.to.isPlanActive.value = false;
+                  onDone();
                 },
               )
             ],
@@ -146,6 +139,13 @@ class Profile extends StatelessWidget {
                                             null
                                         ? null
                                         : NetworkImage(docs.get('profileUrl')),
+                                    child: docs.get('profileUrl') == null
+                                        ? const Icon(
+                                            Icons.person_rounded,
+                                            color: Colors.grey,
+                                            size: 45,
+                                          )
+                                        : null,
                                   ),
                                 ),
                                 SizedBox(
@@ -229,7 +229,25 @@ class Profile extends StatelessWidget {
                       ),
                       Obx(
                         () => PaymentController.to.isPlanActive.value
-                            ? Container()
+                            ? CustomTile(
+                                "Cancel Subscription",
+                                "assets/images/crown.png",
+                                Color(0xFFBDA36B),
+                                () {
+                                  _displayDialog(
+                                    context,
+                                    "Are you sure you want to cancel your subscription? You will lose your ad-free experience.",
+                                    () async {
+                                      Get.back();
+                                      launchUrl(
+                                        Uri.parse(
+                                            "https://play.google.com/store/account/subscriptions?package=com.csp.jabber"),
+                                        mode: LaunchMode.externalApplication,
+                                      );
+                                    },
+                                  );
+                                },
+                              )
                             : CustomTile(
                                 "Subscribe Now",
                                 "assets/images/crown.png",
@@ -296,7 +314,17 @@ class Profile extends StatelessWidget {
                           Spacer(),
                           TextButton(
                             onPressed: () {
-                              _displayDialog(context);
+                              _displayDialog(context, "Do you want to logout?",
+                                  () async {
+                                Navigator.of(context).pop();
+                                Get.find<HomeController>().setScreen(0);
+                                _auth.signOut();
+                                Get.offAll(const OnBoardingPage(),
+                                    transition: Transition.fade);
+                                await FirebaseMessaging.instance.deleteToken();
+                                await Purchases.logOut();
+                                PaymentController.to.isPlanActive.value = false;
+                              });
                             },
                             child: Text(
                               "Log Out",
