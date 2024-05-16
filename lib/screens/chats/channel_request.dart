@@ -355,7 +355,7 @@ class ChannelRequest extends StatelessWidget {
               ],
             ),
           ),
-          homeController.getAdsWidget(),
+          // homeController.getAdsWidget(),
           homeController.getAdsWidget(),
         ],
       ),

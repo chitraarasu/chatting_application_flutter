@@ -336,30 +336,30 @@ class Profile extends StatelessWidget {
                       SizedBox(
                         height: 20,
                       ),
-                      Obx(
-                        () => PaymentController.to.isPlanActive.value
-                            ? Container()
-                            : Text(
-                                "Ads",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                      ),
+                      // Obx(
+                      //   () => PaymentController.to.isPlanActive.value
+                      //       ? Container()
+                      //       : Text(
+                      //           "Ads",
+                      //           style: TextStyle(
+                      //             fontSize: 20,
+                      //             fontWeight: FontWeight.w400,
+                      //             color: Colors.grey,
+                      //           ),
+                      //         ),
+                      // ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: homeController.getAdsWidget(),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: homeController.getAdsWidget(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: homeController.getAdsWidget(),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      //   child: homeController.getAdsWidget(),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      //   child: homeController.getAdsWidget(),
+                      // ),
                     ],
                   ),
                 ),
