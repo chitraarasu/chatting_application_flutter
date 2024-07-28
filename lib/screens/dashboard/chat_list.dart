@@ -22,7 +22,6 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
-  final aw.User? _auth = AWController.to.user.value;
   final box = GetStorage();
   var groups = [];
 
@@ -70,6 +69,8 @@ class _ChatListState extends State<ChatList> {
 
   @override
   Widget build(BuildContext context) {
+    final aw.User? _auth = AWController.to.user.value;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

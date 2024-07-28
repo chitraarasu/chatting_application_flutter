@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
+import 'package:chatting_application/credentials.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,7 +17,7 @@ class AWController extends GetxController {
 
     client
         .setEndpoint('https://cloud.appwrite.io/v1')
-        .setProject('66a4ff02003c6e678fe4')
+        .setProject(awProjectId)
         .setSelfSigned(status: true);
     account = Account(client);
   }

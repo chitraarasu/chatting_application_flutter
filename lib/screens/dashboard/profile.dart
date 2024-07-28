@@ -1,5 +1,4 @@
 import 'package:animations/animations.dart';
-import 'package:appwrite/models.dart' as aw;
 import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/screens/profile/edit_profile.dart';
 import 'package:chatting_application/screens/profile/settings.dart';
@@ -27,7 +26,6 @@ class Profile extends StatelessWidget {
     "🆓 Free",
     "📖 Study",
   ];
-  final aw.User? _auth = AWController.to.user.value;
 
   _displayDialog(BuildContext context, String title, Function onDone) async {
     return showModal(
@@ -67,7 +65,7 @@ class Profile extends StatelessWidget {
       child: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("users")
-            .doc(_auth?.$id)
+            .doc(AWController.to.user.value?.$id)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
