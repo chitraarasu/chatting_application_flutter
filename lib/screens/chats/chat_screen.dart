@@ -1,10 +1,10 @@
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/controller.dart';
 import 'package:chatting_application/model/caller_model.dart';
 import 'package:chatting_application/screens/chats/schedule_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,7 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   RxList selectedMessages = RxList();
 
-  var user = FirebaseAuth.instance.currentUser!;
+  var user = AWController.to.user.value;
 
   var userData;
   List? channelMemberUserTokens;
@@ -70,7 +70,7 @@ class _ChatScreenState extends State<ChatScreen> {
   loadCurrentUserData() async {
     userData ??= await FirebaseFirestore.instance
         .collection('users')
-        .doc(user.uid)
+        .doc(user?.$id)
         .get();
   }
 
@@ -108,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
         if (widget.isForSingleChatList) {
           var randomDoc = FirebaseFirestore.instance
               .collection("private_chats")
-              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .doc(user?.$id)
               .collection('channelChat')
               .doc();
 
@@ -122,7 +122,7 @@ class _ChatScreenState extends State<ChatScreen> {
             'message': encryptData(_enteredMessage.value),
             'messageType': "text",
             'createdTime': Timestamp.now(),
-            'senderId': user.uid,
+            'senderId': user?.$id,
             'senderName': userData['username'],
             'taggedMessageId': '',
           });
@@ -134,7 +134,7 @@ class _ChatScreenState extends State<ChatScreen> {
             'chat_id': widget.channelId,
             'messageType': "text",
             'createdTime': Timestamp.now(),
-            'chat_members': [user.uid, widget.reciverData["uid"]],
+            'chat_members': [user?.$id, widget.reciverData["uid"]],
             'senderName': userData['username'],
             'recentMessage': encryptData(_enteredMessage.value),
           });
@@ -148,7 +148,7 @@ class _ChatScreenState extends State<ChatScreen> {
         } else {
           var randomDoc = FirebaseFirestore.instance
               .collection("messages")
-              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .doc(user?.$id)
               .collection('channelChat')
               .doc();
 
@@ -162,7 +162,7 @@ class _ChatScreenState extends State<ChatScreen> {
             'message': encryptData(_enteredMessage.value),
             'messageType': "text",
             'createdTime': Timestamp.now(),
-            'senderId': user.uid,
+            'senderId': user?.$id,
             'senderName': userData['username'],
             'taggedMessageId': '',
           });
@@ -497,7 +497,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     );
                   } else {
                     List docs = snapshot.data.docs;
-                    final currentUser = FirebaseAuth.instance.currentUser?.uid;
+                    final currentUser = user?.$id;
                     if (docs.isEmpty) {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,

@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -31,7 +31,7 @@ class PaymentController extends GetxController {
     }
     if (await Purchases.isAnonymous) {
       LogInResult result =
-          await Purchases.logIn(FirebaseAuth.instance.currentUser?.uid ?? "");
+          await Purchases.logIn(AWController.to.user.value?.$id ?? "");
       // print(result.customerInfo);
     }
     try {

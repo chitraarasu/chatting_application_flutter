@@ -1,6 +1,6 @@
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
@@ -61,9 +61,9 @@ class _MapState extends State<Map> {
         .collection("messages")
         .doc(widget.channelId)
         .collection('channelMembers')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .doc(AWController.to.user.value?.$id)
         .set({
-      'userId': FirebaseAuth.instance.currentUser?.uid,
+      'userId': AWController.to.user.value?.$id,
       'lat': locData.latitude,
       'lon': locData.longitude,
     });

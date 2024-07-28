@@ -42,7 +42,7 @@ dependencies:
   pin_code_fields: ^7.3.0
   image_picker: ^0.8.4+10
   firebase_core: ^2.13.1
-  firebase_auth: ^4.6.2
+  #  firebase_auth: ^4.6.2
   cloud_firestore: ^4.8.0
   firebase_storage: ^11.2.2
   grouped_list: ^5.1.2
@@ -85,6 +85,7 @@ dependencies:
   purchases_ui_flutter: ^6.29.0
   cached_network_image: ^3.3.1
   location: ^6.0.2
+  appwrite: ^12.0.1
 
 
 dev_dependencies:

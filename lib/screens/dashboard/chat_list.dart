@@ -1,8 +1,9 @@
+import 'package:appwrite/models.dart' as aw;
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/controller.dart';
 import 'package:chatting_application/controller/my_encryption.dart';
 import 'package:chatting_application/widget/search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
@@ -21,7 +22,7 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final aw.User? _auth = AWController.to.user.value;
   final box = GetStorage();
   var groups = [];
 
@@ -154,7 +155,7 @@ class _ChatListState extends State<ChatList> {
                 StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection("users")
-                      .doc(_auth.currentUser?.uid)
+                      .doc(_auth?.$id)
                       .collection('invites')
                       .snapshots(),
                   builder:
@@ -319,8 +320,7 @@ class _ChatListState extends State<ChatList> {
                     ? StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection("private_chats")
-                            .where('chat_members',
-                                arrayContains: _auth.currentUser?.uid)
+                            .where('chat_members', arrayContains: _auth?.$id)
                             .orderBy(
                               'createdTime',
                               descending: true,
@@ -341,7 +341,7 @@ class _ChatListState extends State<ChatList> {
                             var receivers = [];
                             for (var e in chatData) {
                               List data = e["chat_members"];
-                              data.remove(_auth.currentUser?.uid);
+                              data.remove(_auth?.$id);
                               receivers.add(data.first);
                             }
                             print(receivers);
@@ -373,7 +373,7 @@ class _ChatListState extends State<ChatList> {
                                       for (var e in chatData) {
                                         List data = e["chat_members"];
                                         if (data.length > 1) {
-                                          data.remove(_auth.currentUser?.uid);
+                                          data.remove(_auth?.$id);
                                         }
                                         if (user["uid"] == data.first) {
                                           e["userData"] = user;
@@ -459,7 +459,7 @@ class _ChatListState extends State<ChatList> {
                     : StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection("users")
-                            .doc(_auth.currentUser?.uid)
+                            .doc(_auth?.$id)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<dynamic> snapshot) {
@@ -530,8 +530,7 @@ class _ChatListState extends State<ChatList> {
                                             .remove(element["channelId"]);
                                         await FirebaseFirestore.instance
                                             .collection("users")
-                                            .doc(FirebaseAuth
-                                                .instance.currentUser!.uid)
+                                            .doc(_auth?.$id)
                                             .update(
                                                 {"userChannels": userChannels});
                                       }
@@ -588,28 +587,24 @@ class _ChatListState extends State<ChatList> {
                                                   isChannelAdmin: dataWithFilter
                                                               .value[index]
                                                           ["channelOwnerId"] ==
-                                                      FirebaseAuth.instance
-                                                          .currentUser?.uid,
+                                                      _auth?.$id,
                                                 ),
                                                 transition: Transition.fadeIn,
                                               );
                                             },
                                             () async {
-                                              final user = FirebaseAuth
-                                                  .instance.currentUser!;
-
                                               FirebaseFirestore.instance
                                                   .collection('messages')
                                                   .doc(dataWithFilter
                                                           .value[index]
                                                       ['channelId'])
                                                   .collection("channelMembers")
-                                                  .doc(user.uid)
+                                                  .doc(_auth?.$id)
                                                   .delete();
 
                                               await FirebaseFirestore.instance
                                                   .collection('users')
-                                                  .doc(user.uid)
+                                                  .doc(_auth?.$id)
                                                   .get()
                                                   .then((data) async {
                                                 List userChannels =
@@ -619,7 +614,7 @@ class _ChatListState extends State<ChatList> {
                                                         ['channelId']);
                                                 await FirebaseFirestore.instance
                                                     .collection("users")
-                                                    .doc(user.uid)
+                                                    .doc(_auth?.$id)
                                                     .update({
                                                   "userChannels": userChannels
                                                 });

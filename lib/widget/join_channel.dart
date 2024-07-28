@@ -1,20 +1,19 @@
 import 'dart:io';
 
+import 'package:appwrite/models.dart' as aw;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class JoinChannel extends StatefulWidget {
   JoinChannel({
     Key? key,
-    required FirebaseAuth auth,
+    required aw.User auth,
   })  : _auth = auth,
         super(key: key);
 
-  final FirebaseAuth _auth;
+  final aw.User _auth;
 
   @override
   State<JoinChannel> createState() => _JoinChannelState();
@@ -28,6 +27,7 @@ class _JoinChannelState extends State<JoinChannel> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
   QRViewController? _controller;
+
   @override
   void reassemble() {
     super.reassemble();
@@ -62,14 +62,14 @@ class _JoinChannelState extends State<JoinChannel> {
         isValid = true;
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(widget._auth.currentUser?.uid)
+            .doc(widget._auth.$id)
             .get()
             .then((data) async {
           List userChannels = data["userChannels"] ?? [];
 
           await FirebaseFirestore.instance
               .collection("users")
-              .doc(widget._auth.currentUser?.uid)
+              .doc(widget._auth.$id)
               .update({
             "userChannels": [item["channelId"], ...userChannels]
           });
@@ -78,9 +78,9 @@ class _JoinChannelState extends State<JoinChannel> {
               .collection("messages")
               .doc(channelId)
               .collection("channelMembers")
-              .doc(widget._auth.currentUser?.uid)
+              .doc(widget._auth.$id)
               .set({
-            'userId': widget._auth.currentUser?.uid,
+            'userId': widget._auth.$id,
           });
         });
       }

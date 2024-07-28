@@ -1,8 +1,9 @@
 import 'package:animations/animations.dart';
+import 'package:appwrite/models.dart' as aw;
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/controller.dart';
 import 'package:chatting_application/screens/chats/map.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -47,25 +48,25 @@ class ChatProfileSheet extends StatelessWidget {
                     style: TextStyle(color: Colors.red),
                   ),
                   onPressed: () async {
-                    final user = FirebaseAuth.instance.currentUser!;
+                    aw.User? user = AWController.to.user.value;
 
                     await FirebaseFirestore.instance
                         .collection('users')
-                        .doc(user.uid)
+                        .doc(user?.$id)
                         .get()
                         .then((data) async {
                       List userChannels = data["userChannels"] ?? [];
                       userChannels.remove(channelId);
                       await FirebaseFirestore.instance
                           .collection("users")
-                          .doc(user.uid)
+                          .doc(user?.$id)
                           .update({"userChannels": userChannels});
                     });
                     FirebaseFirestore.instance
                         .collection('messages')
                         .doc(channelId)
                         .collection("channelMembers")
-                        .doc(user.uid)
+                        .doc(user?.$id)
                         .delete();
                     Get.back();
                     Get.back();

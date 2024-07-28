@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -105,14 +105,13 @@ class _EditProfileState extends State<EditProfile> {
                       final ref = FirebaseStorage.instance
                           .ref()
                           .child('user_image')
-                          .child(
-                              "${FirebaseAuth.instance.currentUser?.uid}.jpg");
+                          .child("${AWController.to.user.value?.$id}.jpg");
                       await ref.putFile(editProfileImage.value);
                       url = await ref.getDownloadURL();
                     }
                     await FirebaseFirestore.instance
                         .collection("users")
-                        .doc(FirebaseAuth.instance.currentUser?.uid)
+                        .doc(AWController.to.user.value?.$id)
                         .update({
                       'username': _nameController.text,
                       'profileUrl': url ?? widget.data.get('profileUrl'),

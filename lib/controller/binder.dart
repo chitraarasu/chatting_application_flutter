@@ -1,3 +1,4 @@
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/call_controller.dart';
 import 'package:chatting_application/controller/payment_controller.dart';
 import 'package:chatting_application/controller/schedule_controller.dart';
@@ -12,5 +13,6 @@ class Binder extends Bindings {
     Get.put(SMController());
     Get.put(CallController());
     Get.put(PaymentController());
+    Get.put(AWController());
   }
 }

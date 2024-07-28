@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/call_controller.dart';
 import 'package:chatting_application/controller/payment_controller.dart';
 import 'package:chatting_application/model/caller_model.dart';
@@ -6,7 +7,6 @@ import 'package:chatting_application/screens/contacts.dart';
 import 'package:chatting_application/screens/create_new_channel_or_join_channel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_line/dotted_line.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_callkit_incoming/entities/android_params.dart';
@@ -107,14 +107,18 @@ class _HomeState extends State<Home> {
       var preProfileData;
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .doc(AWController.to.user.value?.$id)
           .get()
           .then((value) {
         preProfileData = value.data();
+      }).onError((error, stackTrace) {
+        print(error);
       });
+
+      print(preProfileData);
       if (preProfileData == null) {
-        FirebaseAuth.instance.signOut();
-        Get.offAll(const OnBoardingPage(), transition: Transition.fade);
+        AWController.to.logout();
+        Get.offAll(() => const OnBoardingPage(), transition: Transition.fade);
       }
     });
     super.initState();

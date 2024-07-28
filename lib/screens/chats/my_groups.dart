@@ -1,6 +1,6 @@
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -90,7 +90,7 @@ class _MyGroupsState extends State<MyGroups> {
                     itemBuilder: (BuildContext context, int index) {
                       var data = snapshot.data.docs[index];
                       if (data['channelOwnerId'] ==
-                          FirebaseAuth.instance.currentUser!.uid) {
+                          AWController.to.user.value?.$id) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 2.0, horizontal: 8),

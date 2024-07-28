@@ -1,6 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -9,6 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../ads/ad_state.dart';
+import '../controller/app_write_controller.dart';
 import '../controller/controller.dart';
 import '../controller/payment_controller.dart';
 import 'chats/chat_screen.dart';
@@ -229,7 +229,7 @@ class ChatListCardCaller extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    final user = AWController.to.user.value!;
     HomeController homeController = Get.find();
 
     return Padding(
@@ -264,7 +264,7 @@ class ChatListCardCaller extends StatelessWidget {
                                   final userData = await FirebaseFirestore
                                       .instance
                                       .collection('users')
-                                      .doc(user.uid)
+                                      .doc(user.$id)
                                       .get();
 
                                   List userChannels = contactProfiles[index]
@@ -321,7 +321,7 @@ class ChatListCardCaller extends StatelessWidget {
 
                     var docs = data.docs.map((e) => e.data()).toList();
 
-                    var uid = FirebaseAuth.instance.currentUser?.uid;
+                    var uid = user.$id;
 
                     var channelId = "${uid}__${contactProfiles[index]['uid']}";
 

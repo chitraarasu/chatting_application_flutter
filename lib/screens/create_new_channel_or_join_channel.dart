@@ -1,6 +1,6 @@
 import 'package:animations/animations.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:appwrite/models.dart' as aw;
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -20,7 +20,7 @@ class CreateNewChannelOrJoinChannel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var currentScreen = screen.join.obs;
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final aw.User _auth = AWController.to.user.value!;
     HomeController homeController = Get.find();
 
     return Scaffold(

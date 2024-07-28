@@ -1,11 +1,10 @@
 import 'dart:io';
 
+import 'package:appwrite/models.dart' as aw;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -19,12 +18,12 @@ enum buttonType {
 class CreateChannel extends StatefulWidget {
   const CreateChannel({
     Key? key,
-    required FirebaseAuth auth,
+    required aw.User auth,
     required this.getController,
   })  : _auth = auth,
         super(key: key);
 
-  final FirebaseAuth _auth;
+  final aw.User _auth;
   final HomeController getController;
 
   @override
@@ -37,12 +36,13 @@ class _CreateChannelState extends State<CreateChannel> {
   var randomDoc;
 
   var randomId;
+
   @override
   void initState() {
     super.initState();
     randomDoc = FirebaseFirestore.instance
         .collection("users")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(widget._auth.$id)
         .collection('userChannels')
         .doc();
     randomId = randomDoc.id;
@@ -280,7 +280,7 @@ class _CreateChannelState extends State<CreateChannel> {
                       var channelData = {
                         'channelId': randomId,
                         'channelName': channelNameController.text,
-                        'channelOwnerId': widget._auth.currentUser?.uid,
+                        'channelOwnerId': widget._auth.$id,
                         'channelProfile': url,
                         "recentMessage": "",
                         "time": Timestamp.now(),
@@ -291,23 +291,23 @@ class _CreateChannelState extends State<CreateChannel> {
                           .set(channelData);
                       await FirebaseFirestore.instance
                           .collection('users')
-                          .doc(widget._auth.currentUser?.uid)
+                          .doc(widget._auth.$id)
                           .get()
                           .then((data) async {
                         await FirebaseFirestore.instance
                             .collection("messages")
                             .doc(randomId)
                             .collection("channelMembers")
-                            .doc(widget._auth.currentUser?.uid)
+                            .doc(widget._auth.$id)
                             .set({
-                          'userId': widget._auth.currentUser?.uid,
+                          'userId': widget._auth.$id,
                         });
 
                         List userChannels = data["userChannels"] ?? [];
 
                         await FirebaseFirestore.instance
                             .collection("users")
-                            .doc(widget._auth.currentUser?.uid)
+                            .doc(widget._auth.$id)
                             .update({
                           "userChannels": [randomId, ...userChannels]
                         });

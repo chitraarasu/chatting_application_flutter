@@ -1,8 +1,9 @@
 import 'package:animations/animations.dart';
+import 'package:appwrite/models.dart' as aw;
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/screens/profile/edit_profile.dart';
 import 'package:chatting_application/screens/profile/settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -26,7 +27,7 @@ class Profile extends StatelessWidget {
     "🆓 Free",
     "📖 Study",
   ];
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final aw.User? _auth = AWController.to.user.value;
 
   _displayDialog(BuildContext context, String title, Function onDone) async {
     return showModal(
@@ -66,7 +67,7 @@ class Profile extends StatelessWidget {
       child: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("users")
-            .doc(_auth.currentUser?.uid)
+            .doc(_auth?.$id)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -318,9 +319,10 @@ class Profile extends StatelessWidget {
                                   () async {
                                 Navigator.of(context).pop();
                                 Get.find<HomeController>().setScreen(0);
-                                _auth.signOut();
                                 Get.offAll(const OnBoardingPage(),
                                     transition: Transition.fade);
+
+                                await AWController.to.logout();
                                 await FirebaseMessaging.instance.deleteToken();
                                 await Purchases.logOut();
                                 PaymentController.to.isPlanActive.value = false;

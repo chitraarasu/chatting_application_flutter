@@ -1,15 +1,9 @@
-import 'dart:convert';
-
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/controller/my_encryption.dart';
 import 'package:chatting_application/model/schedule_mesage_model.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
-
-import '../model/notification.dart';
 
 class SMController extends GetxController {
   var _messages = [];
@@ -24,9 +18,9 @@ class SMController extends GetxController {
   }
 
   makeSchedule(channelId, DateTime date, TimeOfDay time) async {
-    final user = FirebaseAuth.instance.currentUser!;
+    final user = AWController.to.user.value;
     var data = {
-      'currentUserId': user.uid,
+      'currentUserId': user?.$id,
       'cid': channelId,
       'messages': _messages
           .map((item) => item.type == "image"

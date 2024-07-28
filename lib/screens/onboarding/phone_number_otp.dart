@@ -1,8 +1,9 @@
+import 'package:appwrite/models.dart' as model;
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:chatting_application/screens/onboarding/privacy_policy.dart';
 import 'package:chatting_application/screens/onboarding/user_profile_input_screen.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,8 +35,7 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
   bool _isPlaying1 = false;
   bool _isPlaying2 = false;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  var verificationId;
+  model.Token? verToken;
 
   @override
   void dispose() {
@@ -123,27 +123,20 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
 
   var currentScreen = screen.number.obs;
 
-  Future<void> signInWithPhoneAuthCredentials(
-      PhoneAuthCredential phoneAuthCredential) async {
-    try {
-      final authCredentials =
-          await _auth.signInWithCredential(phoneAuthCredential);
-
-      if (authCredentials.user != null) {
-        LogInResult result =
-            await Purchases.logIn(authCredentials.user?.uid ?? "");
-        // print(result.customerInfo);
-        Get.to(
-            () => UserProfileInputScreen(phoneNumberController.text,
-                Get.find<HomeController>().selectedDialogCountry.phoneCode),
-            transition: Transition.fadeIn);
-      }
-    } on FirebaseAuthException catch (error) {
-      _isPlaying2 ? null : _controller2?.isActive = true;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("${error.message}")));
-    }
-  }
+  // Future<void> signInWithPhoneAuthCredentials(
+  //     PhoneAuthCredential phoneAuthCredential) async {
+  //   try {
+  //     final authCredentials =
+  //         await _auth.signInWithCredential(phoneAuthCredential);
+  //
+  //     if (authCredentials.user != null) {
+  //     }
+  //   } on FirebaseAuthException catch (error) {
+  //     _isPlaying2 ? null : _controller2?.isActive = true;
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text("${error.message}")));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -399,41 +392,62 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
                                                   Get.find();
                                               final phno =
                                                   "+${homeController.selectedDialogCountry.phoneCode}${phoneNumberController.text}";
-                                              await _auth.verifyPhoneNumber(
-                                                phoneNumber: phno,
-                                                verificationCompleted:
-                                                    (verificationCompleted) async {
+                                              AWController.to.loginWithNumber(
+                                                phno,
+                                                context,
+                                                (token) {
+                                                  currentScreen.value =
+                                                      screen.otp;
+                                                  verToken = token;
+                                                  // verificationId =
+                                                  //     verificationToken;
                                                   getController
                                                       .setIsLoading(false);
                                                 },
-                                                verificationFailed:
-                                                    (verificationFailed) async {
+                                                () {
                                                   _isPlaying2
                                                       ? null
                                                       : _controller2?.isActive =
                                                           true;
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                          content: Text(
-                                                              "${verificationFailed.message}")));
-                                                  getController
-                                                      .setIsLoading(false);
-                                                },
-                                                codeSent: (verificationToken,
-                                                    resendToken) async {
-                                                  currentScreen.value =
-                                                      screen.otp;
-                                                  verificationId =
-                                                      verificationToken;
-                                                  getController
-                                                      .setIsLoading(false);
-                                                },
-                                                codeAutoRetrievalTimeout:
-                                                    (codeAutoRetrievalTimeout) async {
                                                   getController
                                                       .setIsLoading(false);
                                                 },
                                               );
+                                              // await _auth.verifyPhoneNumber(
+                                              //   phoneNumber: phno,
+                                              //   verificationCompleted:
+                                              //       (verificationCompleted) async {
+                                              //     getController
+                                              //         .setIsLoading(false);
+                                              //   },
+                                              //   verificationFailed:
+                                              //       (verificationFailed) async {
+                                              //     _isPlaying2
+                                              //         ? null
+                                              //         : _controller2?.isActive =
+                                              //             true;
+                                              //     ScaffoldMessenger.of(context)
+                                              //         .showSnackBar(SnackBar(
+                                              //             content: Text(
+                                              //                 "${verificationFailed.message}")));
+                                              //     getController
+                                              //         .setIsLoading(false);
+                                              //   },
+                                              //   codeSent: (verificationToken,
+                                              //       resendToken) async {
+                                              //     currentScreen.value =
+                                              //         screen.otp;
+                                              //     verificationId =
+                                              //         verificationToken;
+                                              //     getController
+                                              //         .setIsLoading(false);
+                                              //   },
+                                              //   codeAutoRetrievalTimeout:
+                                              //       (codeAutoRetrievalTimeout) async {
+                                              //     getController
+                                              //         .setIsLoading(false);
+                                              //   },
+                                              // );
                                             }
                                           }
                                         },
@@ -593,15 +607,46 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
                                                   ? null
                                                   : _controller1?.isActive =
                                                       true;
-                                              PhoneAuthCredential
-                                                  phoneAuthCredential =
-                                                  PhoneAuthProvider.credential(
-                                                      verificationId:
-                                                          verificationId,
-                                                      smsCode:
-                                                          otpController.text);
-                                              await signInWithPhoneAuthCredentials(
-                                                  phoneAuthCredential);
+                                              await AWController.to.verifyOTP(
+                                                verToken: verToken!,
+                                                otp: otpController.text,
+                                                context: context,
+                                                onDone: (session) async {
+                                                  print("dkjnmkldsml");
+                                                  print(session.userId);
+                                                  LogInResult result =
+                                                      await Purchases.logIn(
+                                                          session.userId);
+                                                  // print(result.customerInfo);
+                                                  Get.to(
+                                                      () => UserProfileInputScreen(
+                                                          phoneNumberController
+                                                              .text,
+                                                          Get.find<
+                                                                  HomeController>()
+                                                              .selectedDialogCountry
+                                                              .phoneCode,
+                                                          session.userId),
+                                                      transition:
+                                                          Transition.fadeIn);
+                                                },
+                                                onError: () {
+                                                  _isPlaying2
+                                                      ? null
+                                                      : _controller2?.isActive =
+                                                          true;
+                                                },
+                                              );
+
+                                              // PhoneAuthCredential
+                                              //     phoneAuthCredential =
+                                              //     PhoneAuthProvider.credential(
+                                              //         verificationId:
+                                              //             verificationId,
+                                              //         smsCode:
+                                              //             otpController.text);
+                                              // await signInWithPhoneAuthCredentials(
+                                              //     phoneAuthCredential);
                                             }
                                             getController.setIsLoading(false);
                                           }

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:chatting_application/controller/controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +14,9 @@ import '../dashboard/home.dart';
 class UserProfileInputScreen extends StatefulWidget {
   final number;
   final code;
+  final id;
 
-  UserProfileInputScreen(this.number, this.code);
+  UserProfileInputScreen(this.number, this.code, this.id);
 
   @override
   State<UserProfileInputScreen> createState() => _UserProfileInputScreenState();
@@ -45,8 +45,6 @@ class _UserProfileInputScreenState extends State<UserProfileInputScreen> {
       }
     });
   }
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   var isLoading = false.obs;
 
@@ -111,7 +109,7 @@ class _UserProfileInputScreenState extends State<UserProfileInputScreen> {
           body: FutureBuilder(
             future: FirebaseFirestore.instance
                 .collection("users")
-                .doc(_auth.currentUser?.uid)
+                .doc(widget.id)
                 .get(),
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -303,7 +301,7 @@ class _UserProfileInputScreenState extends State<UserProfileInputScreen> {
                                         var preProfileData;
                                         await FirebaseFirestore.instance
                                             .collection('users')
-                                            .doc(_auth.currentUser?.uid)
+                                            .doc(widget.id)
                                             .get()
                                             .then((value) {
                                           preProfileData = value.data();
@@ -319,8 +317,7 @@ class _UserProfileInputScreenState extends State<UserProfileInputScreen> {
                                           final ref = FirebaseStorage.instance
                                               .ref()
                                               .child('user_image')
-                                              .child(
-                                                  "${_auth.currentUser?.uid}.jpg");
+                                              .child("${widget.id}.jpg");
                                           await ref.putFile(
                                               homeController.userProfileImage);
                                           url = await ref.getDownloadURL();
@@ -335,7 +332,7 @@ class _UserProfileInputScreenState extends State<UserProfileInputScreen> {
                                         }
                                         await FirebaseFirestore.instance
                                             .collection("users")
-                                            .doc(_auth.currentUser?.uid)
+                                            .doc(widget.id)
                                             .set({
                                           'token': token,
                                           'username': nameController.text,
@@ -344,7 +341,7 @@ class _UserProfileInputScreenState extends State<UserProfileInputScreen> {
                                           'isOnline': true,
                                           'profileUrl': url,
                                           'userChannels': channelList,
-                                          "uid": _auth.currentUser?.uid,
+                                          "uid": widget.id,
                                         });
                                         isLoading.value = false;
                                         Get.offAll(

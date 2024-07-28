@@ -1,11 +1,9 @@
 import 'dart:io';
 
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 class CustomImageView extends StatefulWidget {
@@ -36,8 +34,7 @@ class _CustomImageViewState extends State<CustomImageView> {
             var url;
             final ref = FirebaseStorage.instance
                 .ref()
-                .child(
-                    'user_data/${FirebaseAuth.instance.currentUser!.uid}/images')
+                .child('user_data/${AWController.to.user.value?.$id}/images')
                 .child("${DateTime.now()}_${widget.image.name}");
             setState(() {
               uploadTask = ref.putFile(
@@ -46,15 +43,15 @@ class _CustomImageViewState extends State<CustomImageView> {
             });
             final snapshot = await uploadTask!.whenComplete(() {});
             url = await snapshot.ref.getDownloadURL();
-            final user = FirebaseAuth.instance.currentUser!;
+            final user = AWController.to.user.value!;
             final userData = await FirebaseFirestore.instance
                 .collection('users')
-                .doc(user.uid)
+                .doc(user.$id)
                 .get();
             var randomDoc = FirebaseFirestore.instance
                 .collection(
                     widget.isForSingleChatList ? "private_chats" : 'messages')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .doc(user.$id)
                 .collection('channelChat')
                 .doc();
 
@@ -69,7 +66,7 @@ class _CustomImageViewState extends State<CustomImageView> {
               'message': url,
               'messageType': "image",
               'createdTime': Timestamp.now(),
-              'senderId': user.uid,
+              'senderId': user.$id,
               'senderName': userData['username'],
             });
             if (widget.isForSingleChatList) {
@@ -80,7 +77,7 @@ class _CustomImageViewState extends State<CustomImageView> {
                 'chat_id': widget.channelId,
                 'messageType': "image",
                 'createdTime': Timestamp.now(),
-                'chat_members': [user.uid, widget.reciverData["uid"]],
+                'chat_members': [user.$id, widget.reciverData["uid"]],
                 'senderName': userData['username'],
                 'recentMessage': url,
               });

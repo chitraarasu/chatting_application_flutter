@@ -1,6 +1,6 @@
 import 'package:animations/animations.dart';
+import 'package:chatting_application/controller/app_write_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
@@ -30,7 +30,7 @@ class ChannelRequest extends StatelessWidget {
     );
   }
 
-  final _auth = FirebaseAuth.instance;
+  final _auth = AWController.to.user.value;
 
   Rx<bool> isLoading = Rx(false);
 
@@ -48,14 +48,14 @@ class ChannelRequest extends StatelessWidget {
         isValid = true;
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(_auth.currentUser?.uid)
+            .doc(_auth?.$id)
             .get()
             .then((data) async {
           List userChannels = data["userChannels"] ?? [];
 
           await FirebaseFirestore.instance
               .collection("users")
-              .doc(FirebaseAuth.instance.currentUser?.uid)
+              .doc(_auth?.$id)
               .update({
             "userChannels": [item["channelId"], ...userChannels]
           });
@@ -64,9 +64,9 @@ class ChannelRequest extends StatelessWidget {
               .collection("messages")
               .doc(channelId)
               .collection("channelMembers")
-              .doc(_auth.currentUser?.uid)
+              .doc(_auth?.$id)
               .set({
-            'userId': _auth.currentUser?.uid,
+            'userId': _auth?.$id,
           });
         });
       }
@@ -74,7 +74,7 @@ class ChannelRequest extends StatelessWidget {
     if (isValid) {
       FirebaseFirestore.instance
           .collection("users")
-          .doc(_auth.currentUser?.uid)
+          .doc(_auth?.$id)
           .collection('invites')
           .doc(channelId)
           .delete();
@@ -85,7 +85,6 @@ class ChannelRequest extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authUser = FirebaseAuth.instance.currentUser!;
     HomeController homeController = Get.find();
 
     return Scaffold(
@@ -118,7 +117,7 @@ class ChannelRequest extends StatelessWidget {
                 StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection("users")
-                      .doc(authUser.uid)
+                      .doc(_auth?.$id)
                       .collection('invites')
                       .orderBy(
                         'createdTime',
@@ -298,8 +297,8 @@ class ChannelRequest extends StatelessWidget {
                                                                           .instance
                                                                           .collection(
                                                                               "users")
-                                                                          .doc(authUser
-                                                                              .uid)
+                                                                          .doc(_auth
+                                                                              ?.$id)
                                                                           .collection(
                                                                               'invites')
                                                                           .doc(docs[index]
