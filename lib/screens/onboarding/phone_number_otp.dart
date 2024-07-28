@@ -612,8 +612,6 @@ class _PhoneNumberAndOtpState extends State<PhoneNumberAndOtp> {
                                                 otp: otpController.text,
                                                 context: context,
                                                 onDone: (session) async {
-                                                  print("dkjnmkldsml");
-                                                  print(session.userId);
                                                   LogInResult result =
                                                       await Purchases.logIn(
                                                           session.userId);
