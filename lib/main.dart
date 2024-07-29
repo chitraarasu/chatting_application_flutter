@@ -11,6 +11,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -34,79 +35,76 @@ void callbackDispatcher() {
           .doc(inputData!['currentUserId'])
           .get();
 
-      print("nsdklsdmkmsdc");
-      Get.put(AWController());
-      print(AWController.to.user.value);
       // HomeController homeController = Get.find();
 
-      // for (var item = 0; item < inputData['messages'].length; item++) {
-      //   var randomDoc = FirebaseFirestore.instance
-      //       .collection("messages")
-      //       .doc(FirebaseAuth.instance.currentUser!.uid)
-      //       .collection('channelChat')
-      //       .doc();
-      //
-      //   FirebaseFirestore.instance
-      //       .collection('messages')
-      //       .doc(inputData['cid'])
-      //       .collection("channelChat")
-      //       .doc(randomDoc.id)
-      //       .set({
-      //     'messageId': randomDoc.id,
-      //     'message': inputData['messages'][item],
-      //     'messageType': inputData['type'][item],
-      //     'createdTime': Timestamp.now(),
-      //     'senderId': inputData['currentUserId'],
-      //     'senderName': userData['username'],
-      //     'taggedMessageId': '',
-      //   });
-      //   FirebaseFirestore.instance
-      //       .collection('messages')
-      //       .doc(inputData['cid'])
-      //       .update({
-      //     'recentMessage': inputData['messages'][item],
-      //     'time': Timestamp.now(),
-      //   });
-      //   // FirebaseFirestore.instance
-      //   //     .collection('users')
-      //   //     .doc(inputData['currentUserId'])
-      //   //     .collection("userChannels")
-      //   //     .doc(inputData['cid'])
-      //   //     .update({
-      //   //   'recentMessage': inputData['messages'][item],
-      //   //   'time': Timestamp.now(),
-      //   // });
-      //
-      //   // // Notification
-      //   // FirebaseFirestore.instance
-      //   //     .collection('messages')
-      //   //     .doc(inputData['cid'])
-      //   //     .collection("channelMembers")
-      //   //     .get()
-      //   //     .then((value) {
-      //   //   var channelMembers = [];
-      //   //   for (var item in value.docs) {
-      //   //     channelMembers.add(item.data()["userId"]);
-      //   //   }
-      //   //   FirebaseFirestore.instance
-      //   //       .collection('users')
-      //   //       .get()
-      //   //       .then((usersData) {
-      //   //     var userTokens = [];
-      //   //     for (var item in usersData.docs) {
-      //   //       if (channelMembers.contains(item.data()["uid"])) {
-      //   //         userTokens.add(item.data()["token"]);
-      //   //       }
-      //   //     }
-      //   //     // homeController.sendNotification(
-      //   //     //   data: {},
-      //   //     //   tokens: userTokens,
-      //   //     //   name: userData['username'],
-      //   //     //   message: inputData['messages'][item],
-      //   //     // );
-      //   //   });
-      //   // });
-      // }
+      for (var item = 0; item < inputData['messages'].length; item++) {
+        var randomDoc = FirebaseFirestore.instance
+            .collection("messages")
+            .doc(inputData['currentUserId'])
+            .collection('channelChat')
+            .doc();
+
+        FirebaseFirestore.instance
+            .collection('messages')
+            .doc(inputData['cid'])
+            .collection("channelChat")
+            .doc(randomDoc.id)
+            .set({
+          'messageId': randomDoc.id,
+          'message': inputData['messages'][item],
+          'messageType': inputData['type'][item],
+          'createdTime': Timestamp.now(),
+          'senderId': inputData['currentUserId'],
+          'senderName': userData['username'],
+          'taggedMessageId': '',
+        });
+        FirebaseFirestore.instance
+            .collection('messages')
+            .doc(inputData['cid'])
+            .update({
+          'recentMessage': inputData['messages'][item],
+          'time': Timestamp.now(),
+        });
+        // FirebaseFirestore.instance
+        //     .collection('users')
+        //     .doc(inputData['currentUserId'])
+        //     .collection("userChannels")
+        //     .doc(inputData['cid'])
+        //     .update({
+        //   'recentMessage': inputData['messages'][item],
+        //   'time': Timestamp.now(),
+        // });
+
+        // // Notification
+        // FirebaseFirestore.instance
+        //     .collection('messages')
+        //     .doc(inputData['cid'])
+        //     .collection("channelMembers")
+        //     .get()
+        //     .then((value) {
+        //   var channelMembers = [];
+        //   for (var item in value.docs) {
+        //     channelMembers.add(item.data()["userId"]);
+        //   }
+        //   FirebaseFirestore.instance
+        //       .collection('users')
+        //       .get()
+        //       .then((usersData) {
+        //     var userTokens = [];
+        //     for (var item in usersData.docs) {
+        //       if (channelMembers.contains(item.data()["uid"])) {
+        //         userTokens.add(item.data()["token"]);
+        //       }
+        //     }
+        //     // homeController.sendNotification(
+        //     //   data: {},
+        //     //   tokens: userTokens,
+        //     //   name: userData['username'],
+        //     //   message: inputData['messages'][item],
+        //     // );
+        //   });
+        // });
+      }
       return Future.value(true);
     }
   });
@@ -185,6 +183,11 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
               color: Colors.white,
+              child: SpinKitFadingCircle(
+                color: Color(0xFF006aff),
+                size: 45.0,
+                duration: Duration(milliseconds: 900),
+              ),
             );
           } else {
             return snapshot.data == null ? OnBoardingPage() : Home();

@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,7 +27,7 @@ class Contacts extends StatefulWidget {
 class _ContactsState extends State<Contacts> {
   HomeController homeController = Get.find();
 
-  Future? getContactFunction;
+  late Future<List<Contact>> getContactFunction;
 
   bool isFromGroup = false;
 
@@ -53,6 +54,7 @@ class _ContactsState extends State<Contacts> {
   }
 
   InterstitialAd? _interstitialAd;
+  bool isInit = true;
 
   @override
   void dispose() {
@@ -60,6 +62,10 @@ class _ContactsState extends State<Contacts> {
       _interstitialAd?.show();
     }
     super.dispose();
+  }
+
+  String cleanPhoneNumber(String phoneNo) {
+    return phoneNo.replaceAll(RegExp(r'[^0-9+]'), '');
   }
 
   @override
@@ -105,7 +111,8 @@ class _ContactsState extends State<Contacts> {
           Expanded(
             child: FutureBuilder(
               future: getContactFunction,
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Contact>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
                     child: const SpinKitFadingCircle(
@@ -115,7 +122,7 @@ class _ContactsState extends State<Contacts> {
                     ),
                   );
                 } else if (snapshot.hasData) {
-                  List contact = snapshot.data;
+                  List<Contact> contact = snapshot.data ?? [];
                   if (contact.isEmpty) {
                     return Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -141,18 +148,23 @@ class _ContactsState extends State<Contacts> {
                           builder: (BuildContext context,
                               AsyncSnapshot<dynamic> userSnp) {
                             if (userSnp.data != null) {
-                              homeController.userData = [];
-                              List docs = userSnp.data.docs;
-                              for (var contactItem in contact) {
-                                for (var userItem in docs) {
-                                  if (contactItem.contains(userItem
-                                      .data()["phoneNumber"]
-                                      .toString())) {
-                                    homeController.userData
-                                        .add(userItem.data());
+                              if (isInit) {
+                                homeController.userData = [];
+                                List docs = userSnp.data.docs;
+                                for (var contactItem in contact) {
+                                  for (var userItem in docs) {
+                                    if (cleanPhoneNumber(
+                                            contactItem.phones.toString())
+                                        .contains(userItem
+                                            .data()["phoneNumber"]
+                                            .toString())) {
+                                      homeController.userData
+                                          .add(userItem.data());
+                                    }
                                   }
                                 }
                               }
+                              isInit = false;
                             }
 
                             if (userSnp.connectionState ==

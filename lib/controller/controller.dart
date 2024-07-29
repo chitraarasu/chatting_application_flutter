@@ -6,9 +6,9 @@ import 'package:chatting_application/credentials.dart';
 import 'package:chatting_application/screens/dashboard/chat_list.dart';
 import 'package:chatting_application/screens/dashboard/music.dart';
 import 'package:chatting_application/screens/dashboard/profile.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
+import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -111,30 +111,33 @@ class HomeController extends GetxController {
     update();
   }
 
-  List _contactPhoneNumbers = [];
+  List<Contact> _contactPhoneNumbers = [];
   List userData = [];
 
-  Future getContacts() async {
+  Future<List<Contact>> getContacts() async {
     if (_contactPhoneNumbers.isNotEmpty) {
       return _contactPhoneNumbers;
     }
-    PermissionStatus status = await Permission.contacts.request();
-    if (status.isGranted) {
-      List<Contact> contact = await ContactsService.getContacts();
+    var permissionStatus = await Permission.contacts.request();
+    if (permissionStatus.isGranted) {
       _contactPhoneNumbers = [];
-      for (Contact item in contact) {
-        if (item.phones == null) continue;
-        if (item.phones!.isNotEmpty) {
-          if (item.phones!.first.value == null) continue;
-          _contactPhoneNumbers.add(
-            item.phones!.first.value!.replaceAll(" ", '').replaceAll("-", ''),
-          );
-        }
+      try {
+        print("Fetching contacts!");
+        List<Contact> contacts = await FastContacts.getAllContacts();
+        _contactPhoneNumbers =
+            contacts.where((element) => element.phones.isNotEmpty).toList();
+        _contactPhoneNumbers
+            .sort((a, b) => a.displayName.compareTo(b.displayName));
+        return _contactPhoneNumbers;
+      } catch (e) {
+        throw "Something went wrong. Please try again later";
       }
-
-      return _contactPhoneNumbers;
+    } else if (permissionStatus.isDenied) {
+      throw 'Contacts permission is denied.';
+    } else if (permissionStatus.isPermanentlyDenied) {
+      throw 'Contacts permission is permanently denied.';
     } else {
-      throw "Please provide contact permission!";
+      throw "Something went wrong. Please try again later";
     }
   }
 
